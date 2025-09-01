@@ -1,10 +1,32 @@
-
-
 Storage = Storage or {}
 
+---@class StashTarget
+--- A structure representing a stash target.
+--- @field label string The label for the stash target.
+--- @field description string The description for the stash target.
+--- @field icon string The icon for the stash target.
 
-function Storage.New(data)
-    return Bridge.ServerEntity.Create(data)
+---@class StashData
+--- A structure representing a stash entity.
+--- @field label string The label for the stash.
+--- @field slots number The number of slots in the stash.
+--- @field target StashTarget The target information for open stash
+
+---@class StorageData
+--- A structure representing a storage entity.
+--- @field id string|number The unique identifier for the storage entity.
+--- @field name string The name of the storage entity.
+--- @field coords vector3 The coordinates where the storage entity is located.
+--- @field rotation vector3|number The rotation of the storage entity.
+--- @field isPickupable string|boolean Indicates if the storage entity is pickupable.
+--- @field stash table The stash information for the storage entity.
+--- @field model string The model of the storage entity.
+
+---Create a new storage at a specific location
+--- @param storageData StorageData
+--- @return entityData table
+function Storage.New(storageData)
+    return Bridge.ServerEntity.Create(storageData)
 end
 
 function Storage.Create(name)
@@ -38,7 +60,7 @@ function Storage.Setup()
             v.entityType = "object"
             bulk[#bulk + 1] = v
         end
-        if v.item then 
+        if v.item then
             Bridge.Framework.RegisterUsableItem(v.item, function(source, itemData)
                 local src = source
                 if not src then return end
@@ -54,7 +76,6 @@ function Storage.Setup()
     Bridge.ServerEntity.CreateBulk(bulk)
 end
 
-
 RegisterNetEvent("mrc-storage:server:PickupStorage", function(id)
     local src = source
     if not src then return end
@@ -63,11 +84,13 @@ RegisterNetEvent("mrc-storage:server:PickupStorage", function(id)
     if not entity then return end
     local config = Storage.Config(entity.isPickupable)
     if not config or not config.item then return end
-    if not Bridge.Inventory.AddItem(src, config.item, 1, nil, {storageId = id}) then return end
+    local coords = vector3(entity.coords.x, entity.coords.y, entity.coords.z)
+    local dist = #(GetEntityCoords(GetPlayerPed(src)) - coords)
+    if dist > 3.0 then return end
+    if not Bridge.Inventory.AddItem(src, config.item, 1, nil, { storageId = id }) then return end
     Bridge.ServerEntity.Delete(id)
     StorageSQL.Delete(id)
 end)
-
 
 AddEventHandler("onResourceStart", function()
     StorageSQL.Create()
@@ -75,4 +98,8 @@ AddEventHandler("onResourceStart", function()
     local load = StorageSQL.Load()
     Wait(1000)
     Bridge.ServerEntity.CreateBulk(load)
+end)
+
+exports("Storage", function()
+    return Storage
 end)
