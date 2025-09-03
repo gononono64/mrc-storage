@@ -1,12 +1,13 @@
 local Pickupable = {
     property = "isPickupable",
-    default = {}
+    default = {},
+    Holding = nil
 }
 
 function Pickupable.OnSpawn(entityData)
     if not entityData or not entityData.id then return end
     entityData.targets = entityData.targets or {}
-    table.insert(entityData.targets, {
+    entityData.targets['pickup'] =  {
         label = Config.Pickup.label,
         description = Config.Pickup.description,
         icon = Config.Pickup.icon,
@@ -14,8 +15,41 @@ function Pickupable.OnSpawn(entityData)
         onSelect = function(entityData)
             TriggerServerEvent("mrc-storage:server:PickupStorage", entityData.id)
         end
-    })
-    Bridge.ClientEntity.Set(entityData.id, "targets", entityData.targets)
+    }
+    Bridge.Entity.Set(entityData.id, "targets", entityData.targets)
+end
+
+function Pickupable.OnUpdate(entityData)
+    if not entityData.attach then return end
+    if entityData.attach.disable then return end
+    if Pickupable.Holding then return end
+    local islocal = entityData.attach.target == GetPlayerServerId(PlayerId())
+    if not islocal then return end
+    Pickupable.Holding = true
+    local ped = PlayerPedId()
+    local animName = Config.Pickup.anim.name
+    local animDict = Config.Pickup.anim.dict
+    local animId = Bridge.Anim.Play(entityData.id, ped, animDict, animName,  8.0, -8.0, -1, 49, 0.0, function(success, reason)
+        if success then
+            print("Animation completed successfully")
+        else
+            print("Animation failed: " .. reason)
+        end
+    end)
+    CreateThread(function()
+        local entity = entityData
+        while not entity.attach.disable do
+            entity = Bridge.Entity.Get(entity.id)
+            Wait(3)
+            if IsControlJustPressed(0, 38) then
+                TriggerServerEvent("mrc-storage:server:DropStorage", entityData.id)
+                Pickupable.Holding = false
+            end
+        end
+        Pickupable.Holding = false
+        Bridge.Anim.Stop(animId)
+    end)
+
 end
 
 --cb
@@ -38,4 +72,5 @@ Bridge.Callback.Register("mrc-storage:cb:PlaceStorage", function(configName)
 end)
 
 
-Bridge.ClientEntity.RegisterBehavior("isPickupable", Pickupable)
+
+Bridge.Entity.RegisterBehavior("isPickupable", Pickupable)
