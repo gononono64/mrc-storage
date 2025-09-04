@@ -24,12 +24,11 @@ Supports QBCore and OX Inventory. Requires [community_bridge](https://github.com
 ## Requirements
 
 - A FiveM server
-- [community_bridge](https://github.com/gononono64/community_bridge) (must start before mrc-storage)
+- [community_bridge](https://github.com/TheOrderFivem/community_bridge/tree/crowleys-branch) (must start before mrc-storage)
 - QBCore or ESX framework
 - Inventory system
 - Target system (qb-target or ox_target)
 - oxmysql
-
 ---
 
 ## Installation
