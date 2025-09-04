@@ -49,10 +49,13 @@ if not IsDuplicityVersion() then
                     description = target.description or Lock.defaults.target.description,
                     icon = target.icon or Lock.defaults.target.icon,
                     distance = target.distance or Lock.defaults.target.distance,
-                    onSelect = Lock.OpenUi
+                    onSelect = function()
+                        local ent = Bridge.Entity.Get(entityData.id)
+                        print("where is it?")
+                        Lock.OpenUi(ent)
+                    end
                 }
                 Bridge.Entity.Set(entityData.id, "targets", entityData.targets)
-                print("Locking storage:", entityData.id)
             end
             return
         end
@@ -69,7 +72,6 @@ if not IsDuplicityVersion() then
             end
         }
         Bridge.Entity.Set(entityData.id, "targets", entityData.targets)      
-       print("Setting lock targets for entity:", entityData.id)
     end
 
     function Lock.OnSpawn(entityData)
@@ -85,10 +87,19 @@ if not IsDuplicityVersion() then
     function Lock.OnUpdate(entityData)
         if not entityData.lock then return end
         local lock = entityData.lock
-        if entityData.lock.disable then 
-            entityData.targets['lock'] = nil 
-            entityData.targets['unlock'] = nil
-            Bridge.Entity.Set(entityData.id, "targets", entityData.targets)
+        if lock.disable then
+            if not lock.disabled then
+                if entityData.targets.lock then 
+                    entityData.targets.lock = nil
+                end
+                if entityData.targets.unlock then
+                    entityData.targets.unlock = nil
+                end
+                lock.disabled = true
+                json.encode(entityData, {indent = true} )
+                Bridge.Entity.Set(entityData.id, "lock", lock)
+                Bridge.Entity.Set(entityData.id, "targets", entityData.targets)
+            end
             return 
         end
         Lock.SetLockTargets(entityData)
@@ -133,7 +144,6 @@ else --SERVER
     end)
 
     RegisterNetEvent("mrc-storage:server:Unlock", function(id, code)
-        print("Unlocking storage:", id, "with code:", code)
         local src = source
         if not src then return end
         local entity = Bridge.Entity.Get(id)
@@ -146,7 +156,6 @@ else --SERVER
         entity.stash = entity.stash or {}
         entity.stash.disable = false
         entity.lock.locked = false
-        print("Unlocking storage:", id, "with code:", code)
         Bridge.Entity.Set(id, { stash = entity.stash, lock = entity.lock })        
     end)
 end

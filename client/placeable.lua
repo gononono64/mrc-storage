@@ -30,19 +30,18 @@ function Pickupable.OnUpdate(entityData)
     local animName = Config.Pickup.anim.name
     local animDict = Config.Pickup.anim.dict
     local animId = Bridge.Anim.Play(entityData.id, ped, animDict, animName,  8.0, -8.0, -1, 49, 0.0, function(success, reason)
-        if success then
-            print("Animation completed successfully")
-        else
-            print("Animation failed: " .. reason)
-        end
     end)
     CreateThread(function()
         local entity = entityData
+        
         while not entity.attach.disable do
             entity = Bridge.Entity.Get(entity.id)
             Wait(3)
+            SetPedMoveRateOverride(PlayerPedId(), Config.Pickup.lockedMovespeed or 1.0)
+            DisableControlAction(0, 21, true) -- Disable the sprint key
             if IsControlJustPressed(0, 38) then
-                TriggerServerEvent("mrc-storage:server:DropStorage", entityData.id)
+                local coords = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0, 1.0, -1.0)
+                TriggerServerEvent("mrc-storage:server:DropStorage", entityData.id, coords)
                 Pickupable.Holding = false
             end
         end
@@ -70,7 +69,6 @@ Bridge.Callback.Register("mrc-storage:cb:PlaceStorage", function(configName)
     if not data then return end
     return data.coords, data.rotation
 end)
-
 
 
 Bridge.Entity.RegisterBehavior("isPickupable", Pickupable)

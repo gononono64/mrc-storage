@@ -78,6 +78,8 @@ function Dial.Open(id)
                     rotation = 0
                     code = ""
                     Bridge.Notify.SendNotify("Invalid code", "error", 5000)
+                    p:resolve(nil)
+                    break
                 end
             
                 if lastPressed == "left" then
@@ -102,6 +104,7 @@ function Dial.Open(id)
             DrawSprite(textureDict,"Dial_BG", 0.5, 0.5, 0.3, aspectRatio * 0.3, 0, 255, 255, 255, 255)
             DrawSprite(textureDict,"Dial", 0.5, 0.5, 0.3*0.5, aspectRatio * 0.3 * 0.5, rotation, 255, 255, 255, 255)
         end
+        Dial.Active = nil
     end)
     return Citizen.Await(p)
 end

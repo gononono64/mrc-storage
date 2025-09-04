@@ -1,0 +1,95 @@
+MRC Storage Install Guide
+What is this?
+
+This guide shows you how to add the mrc-storage resource to your FiveM server.
+
+Features & Capabilities
+
+    - Create storage containers that can be placed in the world or picked up as items.
+    - Supports both static (predefined) and dynamic (player-placed) storage locations.
+    - Storage can be locked with custom codes using lock items or in location definition.
+    - Bolt cutters can be used to break locks (with configurable uses and animations).
+    - Storage containers have configurable stash slots and weight limits.
+    - Storage are attached to players when picked up and locked.
+    - Players cannot run and the movement speed can be controlled while the player is carrying a storage.
+    - Fully configurable target interactions (pickup, open stash, lock/unlock).
+    - Debug mode for visualizing storage zones.
+    - Supports QBCore and OX Inventory item definitions.
+    - Requires community_bridge for framework compatibility.
+
+What you need first
+
+    A FiveM server
+    community_bridge (make sure this starts before mrc-storage)
+    A framework like QBCore or ESX
+    An inventory system (like qb-inventory or ox_inventory)
+    A target system (like qb-target or ox_target)
+    oxmysql set up and working
+
+How to install
+1. Add the resource
+
+    Download mrc-storage.
+    Put the mrc-storage folder in your server’s resources folder.
+
+    Open your server.cfg and add ensure mrc-storage after ensure community_bridge.
+
+     # Example server.cfg
+     ensure community_bridge
+     ensure mrc-storage
+
+2. Add the images
+
+    Go into the mrc-storage folder and find the images folder. This has all the .png images for the storage items.
+    Copy all the .png files from there into your inventory’s image folder. Here are some common places:
+        QBCore (qb-inventory): resources/qb-inventory/html/images/
+        OX Inventory: resources/ox_inventory/web/images/
+        Other inventories: Look at your inventory’s docs.
+
+3. Add the items
+
+    This file has item definitions for different inventory systems.
+    Figure out which inventory you use:
+        QBCore: Copy everything under QB-INVENTORY.
+        OX Inventory: Copy everything under OX INVENTORY.
+    Paste the items into your inventory’s items file:
+        QBCore: qb-core/shared/items.lua (paste inside the QBCore.Shared.Items = { ... } table)
+        OX Inventory: ox_inventory/data/items.lua (paste inside the Items = { ... } table)
+        ESX (with ox_inventory): Use the OX Inventory instructions.
+        Other inventories: Check your inventory’s docs.
+
+    QB-INVENTORY (for QBCore items.lua):
+
+    ['storage_box']      = {['name'] = 'storage_box',      ['label'] = 'Storage Box',      ['weight'] = 2500, ['type'] = 'item', ['image'] = 'storage_box.png',      ['unique'] = false, ['useable'] = false, ['shouldClose'] = true, ['combinable'] = nil, ['description'] = 'A box for storing items'},
+    ['storage_lock']     = {['name'] = 'storage_lock',     ['label'] = 'Storage Lock',     ['weight'] = 1000, ['type'] = 'item', ['image'] = 'storage_lock.png',     ['unique'] = false, ['useable'] = false, ['shouldClose'] = true, ['combinable'] = nil, ['description'] = 'A lock for securing storage'},
+    ['bolt_cutters']     = {['name'] = 'bolt_cutters',     ['label'] = 'Bolt Cutters',     ['weight'] = 1000, ['type'] = 'item', ['image'] = 'bolt_cutters.png',     ['unique'] = false, ['useable'] = false, ['shouldClose'] = true, ['combinable'] = nil, ['description'] = 'A tool for cutting locks'},
+
+    OX INVENTORY (for OX Inventory items.lua):
+
+    ["storage_box"] = {
+        label = "Storage Box",
+        weight = 2500,
+        stack = true,
+        close = true,
+        description = "A box for storing items",
+    },
+    ["storage_lock"] = {
+        label = "Storage Lock",
+        weight = 1000,
+        stack = true,
+        close = true,
+        description = "A lock for securing storage",
+    },
+    ["bolt_cutters"] = {
+        label = "Bolt Cutters",
+        weight = 1000,
+        stack = true,
+        close = true,
+        description = "A tool for cutting locks",
+    },
+
+4. Restart your server
+
+    Restart your FiveM server so everything loads.
+
+That’s it! mrc-storage should now be working. If you want to change stuff, edit the config.lua in the mrc-storage folder.
