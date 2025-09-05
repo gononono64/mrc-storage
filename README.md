@@ -102,6 +102,6 @@ Edit `config.lua` in the mrc-storage folder to customize storage models, lock co
 
 ## Support
 
-For issues or questions, open an issue on GitHub or join the Discord linked in the project.
+For issues or questions, open an issue on GitHub or join the [Discord](https://discord.gg/2CJa9vz5) linked in the project.
 
 ---
