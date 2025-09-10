@@ -30,7 +30,14 @@ if not IsDuplicityVersion() then
     end   
 
     function Lock.OpenUi(entityData)
-        local code = Dial.Open(entityData)
+        local lock = entityData.lock or {}
+        local code = nil
+        print("This one:", json.encode(lock, {indent = true}))
+        if lock.type == "keypad" then 
+            code = Keypad.Open(entityData)
+        else
+            code = Dial.Open(entityData)
+        end
         if not code then return end
         TriggerServerEvent("mrc-storage:server:Unlock", entityData.id, code)
     end
@@ -96,7 +103,7 @@ if not IsDuplicityVersion() then
                     entityData.targets.unlock = nil
                 end
                 lock.disabled = true
-                json.encode(entityData, {indent = true} )
+                print(json.encode(entityData, {indent = true} ))
                 Bridge.Entity.Set(entityData.id, "lock", lock)
                 Bridge.Entity.Set(entityData.id, "targets", entityData.targets)
             end

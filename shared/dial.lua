@@ -1,6 +1,7 @@
 if IsDuplicityVersion() then return end
 
 Dial = {}
+Keypad = {}
 function Dial.Open(id)
     if not id or Dial.Active then return end
     Dial.Active = id
@@ -94,9 +95,7 @@ function Dial.Open(id)
                 break
             end
             
-            
             ramp = math.max(0, ramp - 1)
-
             notchIndex = math.floor(100 - rotation / notchAngle)
             if notchIndex == 100 then notchIndex = 0 end
             local textureDict = "MPSafeCracking"
@@ -109,8 +108,30 @@ function Dial.Open(id)
     return Citizen.Await(p)
 end
 
+function Keypad.Open(id)
+    if not id or Dial.Active then return end
+    Dial.Active = id
+    local result = Bridge.Input.Open("Keypad", {
+        {
+            type = 'number',
+            label = 'code',
+            description = 'Enter combination (4 digits)',
+            required = true,
+            min = 1000,
+            max = 9999
+        }
+    })
+    Dial.Active = nil
+    return result and result[1] or nil
+end
+
 Bridge.Callback.Register("mrc-storage:cb:UseLock", function(id)
+    local configLock = Config.Lock[id]
+    if not configLock then return end
+    if configLock.type == "keypad" then
+        local code = Keypad.Open(id)
+        return code
+    end
     local code = Dial.Open(id)
-    Dial.LastCode = code or Dial.LastCode
     return code
 end)

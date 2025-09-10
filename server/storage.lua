@@ -163,8 +163,8 @@ function Storage.Setup()
                 code = Bridge.Callback.Trigger("mrc-storage:cb:UseLock", src, id, closest.id) 
             end
             if not code then return end
+            if not Bridge.Inventory.RemoveItem(src, lock.item, 1) then return end
             Lock.Create(closest.id, code)
-            closest.lock = Config.Lock[id] or {}
             closest.lock.disable = false
             closest.lock.name = id
             closest.lock.locked = true

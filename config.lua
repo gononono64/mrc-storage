@@ -22,6 +22,25 @@ Config.Pickup = {
 Config.Lock = {
     ['storage_lock'] = { 
         item = "storage_lock", -- item name
+        type = "dial",
+        target = {
+            lock = {
+                label = "Lock",
+                description = "Unlock",
+                icon = "fa-solid fa-circle-notch",
+                distance = 2.0
+            },
+            unlock = {
+                label = "Unlock",
+                description = "Lock",
+                icon = "fa-solid fa-circle-notch",
+                distance = 2.0
+            }
+        },     
+    },
+    ['storage_keypad'] = { 
+        item = "storage_keypad", -- item name
+        type = "keypad",
         target = {
             lock = {
                 label = "Lock",

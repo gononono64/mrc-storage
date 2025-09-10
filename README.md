@@ -58,6 +58,7 @@ Paste the following item definitions into your inventory’s items file:
 ```lua
 ['storage_box']      = {['name'] = 'storage_box',      ['label'] = 'Storage Box',      ['weight'] = 2500, ['type'] = 'item', ['image'] = 'storage_box.png',      ['unique'] = false, ['useable'] = false, ['shouldClose'] = true, ['combinable'] = nil, ['description'] = 'A box for storing items'},
 ['storage_lock']     = {['name'] = 'storage_lock',     ['label'] = 'Storage Lock',     ['weight'] = 1000, ['type'] = 'item', ['image'] = 'storage_lock.png',     ['unique'] = false, ['useable'] = false, ['shouldClose'] = true, ['combinable'] = nil, ['description'] = 'A lock for securing storage'},
+['storage_keypad']   = {['name'] = 'storage_keypad',   ['label'] = 'Storage Keypad',   ['weight'] = 1000, ['type'] = 'item', ['image'] = 'storage_keypad.png',   ['unique'] = false, ['useable'] = false, ['shouldClose'] = true, ['combinable'] = nil, ['description'] = 'A keypad for securing storage'},
 ['bolt_cutters']     = {['name'] = 'bolt_cutters',     ['label'] = 'Bolt Cutters',     ['weight'] = 1000, ['type'] = 'item', ['image'] = 'bolt_cutters.png',     ['unique'] = false, ['useable'] = false, ['shouldClose'] = true, ['combinable'] = nil, ['description'] = 'A tool for cutting locks'},
 ```
 
@@ -76,6 +77,13 @@ Paste the following item definitions into your inventory’s items file:
     stack = true,
     close = true,
     description = "A lock for securing storage",
+},
+["storage_keypad"] = {
+    label = "Storage Keypad",
+    weight = 1000,
+    stack = true,
+    close = true,
+    description = "A keypad for securing storage",
 },
 ["bolt_cutters"] = {
     label = "Bolt Cutters",
