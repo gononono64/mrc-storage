@@ -110,7 +110,8 @@ Config.Storages = {
             }
         },
         attach = {
-            offset = vector3(0.0, 0.5, 0.0) -- offset from player when picked up and locked
+            offset = vector3(0.0, 0.5, 0.0), -- offset from player when picked up and locked
+            rotation = vector3(0.0, 0.0, 0.0) -- rotation when picked up and locked
         },
         debug = false, -- shows boxzone when no model is specified
     },
