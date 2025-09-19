@@ -107,9 +107,16 @@ Config.Storages = {
                 label = "Open Stash",
                 description = "Access the stash to store or retrieve items.",
                 icon = "fas fa-boxes",
-            }
+            },
+            blacklist = {
+                
+            }, -- list of item names that cannot be stored. Only available with ox_inventory
+            whitelist = {
+                ['corn'] = true
+            }, -- list of item names that can be stored, if this has entries, only those items can be stored. Only available with ox_inventory
         },
         attach = {
+            bone = 0,
             offset = vector3(0.0, 0.5, 0.0), -- offset from player when picked up and locked
             rotation = vector3(0.0, 0.0, 0.0) -- rotation when picked up and locked
         },

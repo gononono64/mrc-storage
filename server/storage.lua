@@ -48,6 +48,11 @@ function Storage.Create(storageData)
     return entityData
 end
 
+function Storage.Get(id)
+    if not id then return end
+    return Storage.All[id]
+end
+
 function Storage.GetClosest(coords)
     local closest = nil
     local closestDist = -1
@@ -236,3 +241,38 @@ end)
 exports("Storage", function()
     return Storage
 end)
+
+
+if Bridge.Inventory.GetResourceName() ~= "ox_inventory" then return end
+
+local hookId = nil
+AddEventHandler('onResourceStart', function(resourceName)
+    if resourceName ~= GetCurrentResourceName() then return end
+    hookId = exports.ox_inventory:registerHook('swapItems', function(payload)
+        local fromId = payload.fromInventory
+        local toId = payload.toInventory
+        local fromIsStorage = Storage.Get(fromId)
+        local toIsStorage = Storage.Get(toId)
+        if not fromIsStorage and not toIsStorage then return end
+        local blacklist = fromIsStorage?.stash?.blacklist or toIsStorage?.stash?.blacklist
+        local whitelist = fromIsStorage?.stash?.whitelist or toIsStorage?.stash?.whitelist
+        local itemName = payload.fromSlot?.name
+        if not itemName then return end
+        local swappedItemName = type(payload.toSlot) == "table" and payload.toSlot.name
+        if swappedItemName then
+            if whitelist and not whitelist[swappedItemName] then return false end
+            if blacklist and blacklist[swappedItemName] then return false end
+        end
+
+        if whitelist and not whitelist[itemName] then return false end
+        if blacklist and blacklist[itemName] then return false end
+        return true
+    end)
+end)
+
+AddEventHandler('onResourceStop', function(resourceName)
+    if resourceName ~= GetCurrentResourceName() then return end
+    if not hookId then return end
+    exports.ox_inventory:removeHooks(hookId)
+end)
+
