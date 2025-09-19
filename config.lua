@@ -109,11 +109,10 @@ Config.Storages = {
                 icon = "fas fa-boxes",
             },
             blacklist = {
-                
+                ['storage_box'] = true
             }, -- list of item names that cannot be stored. Only available with ox_inventory
             whitelist = {
-                ['corn'] = true
-            }, -- list of item names that can be stored, if this has entries, only those items can be stored. Only available with ox_inventory
+            }, -- list of item names that can be stored.    Only available with ox_inventory
         },
         attach = {
             bone = 0,
