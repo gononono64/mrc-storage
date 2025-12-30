@@ -85,7 +85,6 @@ end
 
 function Storage.Place(id, name, coords, rotation, lock)
     local storageConfig = Storage.Config(name)
-    print(json.encode(storageConfig))
     storageConfig.id = id
     storageConfig.coords = coords
     storageConfig.rotation = rotation or vector3(0.0, 0.0, 0.0)
@@ -94,7 +93,7 @@ function Storage.Place(id, name, coords, rotation, lock)
         storageConfig.lock = lock or storageConfig.lock or {}
         storageConfig.lock.name = storageConfig.lock.name or lock.name
     end
-    
+
     local storage = Storage.Create(storageConfig)
     if storage.lock and not storage.lock.code then
         storage.lock.code = Lock.GetCode(id)
@@ -151,21 +150,21 @@ function Storage.Setup()
     end
     Bridge.Entity.CreateBulk(bulk)
 
-    for id, lock in pairs(Config.Lock) do 
+    for id, lock in pairs(Config.Lock) do
          Bridge.Framework.RegisterUsableItem(lock.item, function(source, itemData)
             local src = source
             if not src then return end
             local coords = GetEntityCoords(GetPlayerPed(src))
             local closest, dist = Storage.GetClosest(coords)
             if not closest or dist > 3.0 then return end
-            if closest.lock and not closest.lock.disable then 
+            if closest.lock and not closest.lock.disable then
                 return Bridge.Notify.SendNotify(src, "This storage is already locked.", "error", 5000)
             end
             closest.lock = Config.Lock[id]
             closest.lock.name = id
             local code = itemData.metadata?.code
-            if not code then 
-                code = Bridge.Callback.Trigger("mrc-storage:cb:UseLock", src, id, closest.id) 
+            if not code then
+                code = Bridge.Callback.Trigger("mrc-storage:cb:UseLock", src, id, closest.id)
             end
             if not code then return end
             if not Bridge.Inventory.RemoveItem(src, lock.item, 1) then return end
@@ -275,4 +274,3 @@ AddEventHandler('onResourceStop', function(resourceName)
     if not hookId then return end
     exports.ox_inventory:removeHooks(hookId)
 end)
-

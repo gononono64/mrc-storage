@@ -5,7 +5,7 @@ Config.Settings = {
     debug = true,
 }
 
-Config.Pickup = {   
+Config.Pickup = {
     label = "Pickup",
     description = "Put the object in your inventory",
     icon = "fas fa-boxes",
@@ -20,7 +20,7 @@ Config.Pickup = {
 
 
 Config.Lock = {
-    ['storage_lock'] = { 
+    ['storage_lock'] = {
         item = "storage_lock", -- item name
         type = "dial",
         target = {
@@ -36,9 +36,9 @@ Config.Lock = {
                 icon = "fa-solid fa-circle-notch",
                 distance = 2.0
             }
-        },     
+        },
     },
-    ['storage_keypad'] = { 
+    ['storage_keypad'] = {
         item = "storage_keypad", -- item name
         type = "keypad",
         target = {
@@ -54,7 +54,7 @@ Config.Lock = {
                 icon = "fa-solid fa-circle-notch",
                 distance = 2.0
             }
-        },     
+        },
     }
 }
 
@@ -63,10 +63,10 @@ Config.BoltCutters = {
     ['bolt_cutters'] = {
         item = "bolt_cutters", -- item name
         uses = 5,
-        progress = {            
+        progress = {
             duration = 5000,
             label = "Cutting Lock",
-            disable ={
+            disable = {
                 move = true,
                 car = true,
                 combat = true,
@@ -91,7 +91,7 @@ Config.BoltCutters = {
 
 Config.Storages = {
     ["test_storage"] = {
-        item = "storage_box", -- Dont include item if you dont want it to be an item. NOTE: must include a model
+        item = "storage_box", -- Dont include item if you dont want it to be an item. NOTE: must include a model to use
         model = "v_serv_abox_1", -- Can be nil if locations are setup.
         entityType = "object",
         offset = vector3(0.0, 0.0, 0.25), -- Model compensation offset for storage placement
@@ -101,8 +101,8 @@ Config.Storages = {
         },
         stash = {
             label = "Open Stash",
-            slots = 20, -- stash slot count
-            maxWeight = 100000, -- max weight allowed
+            slots = 3, -- stash slot count
+            maxWeight = 1000, -- max weight allowed
             target = {
                 label = "Open Stash",
                 description = "Access the stash to store or retrieve items.",
@@ -111,8 +111,8 @@ Config.Storages = {
             blacklist = {
                 ['storage_box'] = true
             }, -- list of item names that cannot be stored. Only available with ox_inventory
-            whitelist = {
-            }, -- list of item names that can be stored.    Only available with ox_inventory
+            -- whitelist = {
+            -- }, -- list of item names that can be stored.    Only available with ox_inventory
         },
         attach = {
             bone = 0,
@@ -133,4 +133,4 @@ Config.Storages = {
 
 --- no entity support also withh predefined locations
 --- bolt cutters
---- 
+---

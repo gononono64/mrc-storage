@@ -1,15 +1,19 @@
-
 StorageSQL = StorageSQL or {}
 
 function StorageSQL.Create()
-    Bridge.SQL.Create("mrc_storage", {
-        {name = "id", type = "VARCHAR(50) PRIMARY KEY"},
-        {name = "data", type = "LONGTEXT" } -- JSON data,
-    })
+    assert(MySQL, "Tried using module MySQL without MySQL being loaded")
+    local query = [[
+        CREATE TABLE IF NOT EXISTS mrc_storage (
+            id VARCHAR(50) PRIMARY KEY,
+            data LONGTEXT
+        );
+    ]]
+    MySQL.query.await(query)
 end
 
 function StorageSQL.Load()
-    local result = Bridge.SQL.GetAll("mrc_storage")
+    assert(MySQL, "Tried using module MySQL without MySQL being loaded")
+    local result = MySQL.query.await("SELECT * FROM mrc_storage;")
     local allData = {}
 
     for _, data in pairs(result or {}) do
@@ -23,12 +27,12 @@ function StorageSQL.Load()
 end
 
 function StorageSQL.Save(id, data)
-    Bridge.SQL.InsertOrUpdate("mrc_storage", {
-        id = id,
-        data = json.encode(data)
-    })
+    assert(MySQL, "Tried using module MySQL without MySQL being loaded")
+    local encoded = json.encode(data)
+    MySQL.query.await("INSERT INTO mrc_storage (id, data) VALUES (?, ?) ON DUPLICATE KEY UPDATE data = ?;", { id, encoded, encoded })
 end
 
 function StorageSQL.Delete(id)
-    Bridge.SQL.Delete("mrc_storage", "id = '" .. id .. "'")
+    assert(MySQL, "Tried using module MySQL without MySQL being loaded")
+    MySQL.query.await("DELETE FROM mrc_storage WHERE id = ?;", { id })
 end
