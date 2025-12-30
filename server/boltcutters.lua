@@ -1,29 +1,5 @@
 BoltCutters = {}
 
-Config.BoltCutters = {
-    ['bolt_cutters'] = {
-        item = "bolt_cutters", -- item name
-        progress = {
-            uses = 5,
-            duration = 5000,
-            label = "Cutting Lock",
-            anim = {
-                dict = "anim@heists@box_carry@",
-                name = "idle",
-                flags = 49,
-            },
-            prop = {
-                {
-                    model = "prop_tool_bolt_cutter",
-                    bone = 60309,
-                    coords = vector3(0.0, 0.0, 0.0),
-                    rotation = vector3(0.0, 0.0, 0.0),
-                }
-            }
-        },
-    }
-}
-
 function BoltCutters.Setup()
     local load = StorageSQL.Load()
     for k, v in pairs(Config.BoltCutters) do
@@ -52,7 +28,7 @@ function BoltCutters.Setup()
             Bridge.Entity.Set(closest.id, {lock = closest.lock, stash = closest.stash})
             StorageSQL.Save(closest.id, closest)
         end)
-        
+
     end
     Bridge.Entity.CreateBulk(load)
 end
