@@ -80,7 +80,6 @@ function Storage.AddLockTargets(id, lockName, isLocked)
              canInteract = function(_)
                 local ent = Bridge.Entity.Get(storage.id)
                 if not ent then return false end
-                print("isLocked?", ent.locked)
                 return not ent.locked
             end,
             onSelect = function()
@@ -95,7 +94,21 @@ function Storage.AddLockTargets(id, lockName, isLocked)
     return storage.rawTargets
 end
 
+function Storage.RemoveLockTargets(id)
+    local storage = Storage.Get(id)
+    if not storage then return end
+    if not storage.rawTargets then return end
+    storage.rawTargets['lock'] = nil
+    storage.rawTargets['unlock'] = nil
+    Bridge.Entity.SetKey(storage.id, "rawTargets", storage.rawTargets)
+    local targets = Utils.ToArray(storage.rawTargets)
+    table.sort(targets, function(a, b) return (a.label < b.label) end)
+    Bridge.Entity.SetTargets(storage.id, targets)
+    return storage.rawTargets
+end
+
 Bridge.Entity.SetOnCreate('stash', function(_entityData)
+    local carrying = false
     _entityData.OnSpawn = function(entityData)
         Storage.SetTargets(entityData.id, entityData.name)
     end
@@ -105,12 +118,49 @@ Bridge.Entity.SetOnCreate('stash', function(_entityData)
     end
 
     _entityData.OnLock = function(entityData, key, value, old)
+        if not value then return Storage.RemoveLockTargets(entityData.id) end
         Storage.AddLockTargets(entityData.id, value, entityData.locked)
     end
 
+    _entityData.OnCoords = function(entityData, key, value, old)
+        -- if not value then return end
+        CreateThread(function()
+            Wait(100)
+            Bridge.Entity.UpdateCoords(entityData.id, vector3(value.x, value.y, value.z))
+        end)
+    end
+
+    _entityData.OnRotation = function(entityData, key, value, old)
+        -- if not value then return end
+        CreateThread(function()
+            Wait(100)
+            Bridge.Entity.UpdateRotation(entityData.id, vector3(value.x, value.y, value.z))
+        end)
+    end
+
     _entityData.OnAttach = function(entityData, key, value, old)
-        print("Attaching storage:", entityData.id, "to", value)
-        Bridge.ClientEntity.SetAttach(entityData.id, value)
+        Bridge.Entity.SetAttach(entityData.id, value)
+        carrying = (value and entityData.id) or false
+        if not value then return end
+        local playerPed = PlayerPedId()
+        local targetSrc = value.target
+        if not targetSrc then return end
+        local targetPlayer = GetPlayerFromServerId(targetSrc)
+        if targetPlayer == -1 then return end
+        local targetPed = GetPlayerPed(targetPlayer)
+        if not targetPed or targetPed == 0 then return end
+        if targetPed ~= playerPed then return end
+        local anim = Config.Pickup.anim
+        Bridge.Anim.Play(entityData.id, playerPed, anim.dict, anim.name, anim.blendIn or 8.0, anim.blendOut or -8.0, anim.duration or -1, anim.flags)
+        CreateThread(function()
+            while carrying do
+                if IsControlJustPressed(0, 38) then -- E
+                    TriggerServerEvent("mrc-storage:server:DropStorage", entityData.id)
+                end
+                Wait(1)
+            end
+            Bridge.Anim.Stop(entityData.id)
+        end)
     end
 
     return _entityData

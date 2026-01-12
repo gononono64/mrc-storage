@@ -5,7 +5,7 @@ function BoltCutters.Setup()
         Bridge.Framework.RegisterUsableItem(v.item, function(source, itemData)
             local src = source
             if not src then return end
-            local uses = itemData.metadata?.uses or v.progress.uses
+            local uses = itemData.metadata?.uses or v.uses
             local coords = GetEntityCoords(GetPlayerPed(src))
             local closest, dist = Storage.GetClosest(coords)
             if not closest or dist > 3.0 then return end

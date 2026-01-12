@@ -54,7 +54,6 @@ function Storage.Create(configIndex)
     local entityData = Bridge.Entity.Create(storageData)
     assert(entityData.stash, "Storage.Create: Missing stash in config for " .. tostring(configIndex))
     local stash = config.stash or {}
-    print("Registering stash for storage:", entityData.id, json.encode(stash, {indent = true}))
     Bridge.Inventory.RegisterStash(entityData.id, stash.label, stash.slots, stash.maxWeight, nil, stash.target?.groups)
     Storage.All[entityData.id] = entityData
     return entityData
@@ -96,7 +95,6 @@ function Storage.Setup()
                 if not src then return end
                 local storageId = itemData.metadata?.storageId
                 local lock = itemData.metadata?.lock
-                print("Using storage item:", json.encode(itemData, {indent = true}))
                 local coords, rotation = Bridge.Callback.Trigger("mrc-storage:cb:PlaceStorage", src, k)
                 if not coords then return end
                 if not Bridge.Inventory.RemoveItem(src, v.item, 1) then return end
@@ -128,9 +126,7 @@ function Storage.Setup()
             Storage.AddLock(closest.id, closest.lock, code, true)
             closest.owner = Bridge.Framework.GetPlayerIdentifier(src)
             closest.stash.disable = true
-            closest.code = code
             StorageSQL.Save(closest.id, closest)
-            closest.code = nil
          end)
     end
 end
@@ -154,9 +150,8 @@ function Storage.AddLock(storageId, _type, code, sync)
         })
     end
 
-    storage.code = code
+
     StorageSQL.Save(storage.id, storage)
-    storage.code = nil
 end
 
 function Storage.RemoveLock(storageId)
@@ -172,7 +167,6 @@ function Storage.RemoveLock(storageId)
         lock = false,
         locked = false
     })
-
 end
 
 
@@ -242,10 +236,11 @@ function Storage.Detach(storageId, coords, rotation)
     local storage = Storage.Get(storageId)
     if not storage then return end
     if not storage.attach then return end
-    storage.attach = nil
+    storage.attach = false
     storage.coords = vector3(coords.x, coords.y, coords.z)
     storage.rotation = vector3(rotation.x, rotation.y, rotation.z)
-    Bridge.Entity.Set(storageId, { attach = nil, coords = coords, rotation = rotation })
+    StorageSQL.Save(storage.id, storage)
+    Bridge.Entity.Set(storageId, { attach = false, coords = storage.coords, rotation = storage.rotation })
 end
 
 function Storage.Open(id, src)
@@ -279,7 +274,7 @@ RegisterNetEvent("mrc-storage:server:PickupStorage", function(id)
     Storage.Attach(id, src)
 end)
 
-RegisterNetEvent("mrc-storage:server:DropStorage", function(id, coords, rotation)
+RegisterNetEvent("mrc-storage:server:DropStorage", function(id)
     local src = source
     if not src then return end
     local entity = Bridge.Entity.Get(id)
@@ -288,10 +283,7 @@ RegisterNetEvent("mrc-storage:server:DropStorage", function(id, coords, rotation
     if not config or not config.item then return end
     local player = GetPlayerPed(src)
     local playerCoords = GetEntityCoords(player)
-    local dist = #(playerCoords - coords)
-    if dist > 3.0 then return end
-    Storage.Detach(id, coords, rotation)
-    StorageSQL.Save(id, entity)
+    Storage.Detach(id, playerCoords - vector3(0, 0, 1.0), vector3(0, 0, 0))
 end)
 
 RegisterNetEvent("mrc-storage:server:OpenStash", function(id)
