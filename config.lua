@@ -18,7 +18,6 @@ Config.Pickup = {
     }
 }
 
-
 Config.Lock = {
     ['storage_lock'] = {
         item = "storage_lock", -- item name
@@ -57,7 +56,6 @@ Config.Lock = {
         },
     }
 }
-
 
 Config.BoltCutters = {
     ['bolt_cutters'] = {
@@ -122,15 +120,3 @@ Config.Storages = {
         debug = false, -- shows boxzone when no model is specified
     },
 }
-
-
-
-
-
-
-
-
-
---- no entity support also withh predefined locations
---- bolt cutters
----
