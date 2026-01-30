@@ -28,8 +28,11 @@ end
 
 function StorageSQL.Save(id, data)
     assert(MySQL, "Tried using module MySQL without MySQL being loaded")
+    data.attach = nil
+    data.code = Lock.GetCode(id)
     local encoded = json.encode(data)
     MySQL.query.await("INSERT INTO mrc_storage (id, data) VALUES (?, ?) ON DUPLICATE KEY UPDATE data = ?;", { id, encoded, encoded })
+    data.code = nil
 end
 
 function StorageSQL.Delete(id)

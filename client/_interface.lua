@@ -1,4 +1,3 @@
-if IsDuplicityVersion() then return end
 
 Dial = {}
 Keypad = {}
@@ -20,7 +19,7 @@ function Dial.Open(id)
             Wait(3)
             DisableAllControlActions(0)
             if IsDisabledControlJustPressed(0, 34) then
-                rotation = (rotation + notchAngle) % 360 -- much slower
+                rotation = (rotation + notchAngle) % 360
                 ramp = 50
                 lpressed = true
             end
@@ -40,23 +39,23 @@ function Dial.Open(id)
             if IsDisabledControlJustReleased(0, 35) then
                 lastPressed = "right"
                 rpressed = false
-                if ramp <= 0 then 
+                if ramp <= 0 then
                     rotation = math.floor(rotation / notchAngle) * notchAngle
                 end
             end
 
-            if lpressed and ramp <= 0 then 
-                rotation = (rotation + notchAngle * 0.25) % 360 -- speed up rotation
+            if lpressed and ramp <= 0 then
+                rotation = (rotation + notchAngle * 0.25) % 360
             end
 
             if rpressed and ramp <= 0 then
-                rotation = (rotation - notchAngle * 0.25) % 360 -- speed up rotation
+                rotation = (rotation - notchAngle * 0.25) % 360 
             end
 
             if lastPressed == "left" and rpressed then
                 lastPressed = ""
                 code = code .. "L" .. tostring(notchIndex) .. " "
-                
+
             elseif lastPressed == "right" and lpressed then
                 lastPressed = ""
                 code = code .. "R" .. tostring(notchIndex) .. " "
@@ -68,9 +67,8 @@ function Dial.Open(id)
                 break
             end
 
-            --enter 
+            --enter
             if IsDisabledControlJustPressed(0, 176) then
-                -- split the code to make sure there are 2 entries
                 local entries = {}
                 for entry in code:gmatch("%S+") do
                     table.insert(entries, entry)
@@ -82,7 +80,7 @@ function Dial.Open(id)
                     p:resolve(nil)
                     break
                 end
-            
+
                 if lastPressed == "left" then
                     lastPressed = ""
                     code = code .. "L" .. tostring(notchIndex) .. " "
@@ -94,7 +92,7 @@ function Dial.Open(id)
                 p:resolve(code)
                 break
             end
-            
+
             ramp = math.max(0, ramp - 1)
             notchIndex = math.floor(100 - rotation / notchAngle)
             if notchIndex == 100 then notchIndex = 0 end

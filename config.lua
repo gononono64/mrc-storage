@@ -18,7 +18,6 @@ Config.Pickup = {
     }
 }
 
-
 Config.Lock = {
     ['storage_lock'] = {
         item = "storage_lock", -- item name
@@ -57,7 +56,6 @@ Config.Lock = {
         },
     }
 }
-
 
 Config.BoltCutters = {
     ['bolt_cutters'] = {
@@ -102,7 +100,7 @@ Config.Storages = {
         stash = {
             label = "Open Stash",
             slots = 3, -- stash slot count
-            maxWeight = 1000, -- max weight allowed
+            maxWeight = 5000, -- max weight allowed
             target = {
                 label = "Open Stash",
                 description = "Access the stash to store or retrieve items.",
@@ -122,15 +120,3 @@ Config.Storages = {
         debug = false, -- shows boxzone when no model is specified
     },
 }
-
-
-
-
-
-
-
-
-
---- no entity support also withh predefined locations
---- bolt cutters
----
